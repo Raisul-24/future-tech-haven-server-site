@@ -24,11 +24,28 @@ async function run() {
       await client.connect();
 
       const userCollection = client.db('futureTechHavenDB').collection('user');
+      const productCollection = client.db('futureTechHavenDB').collection('product');
+
+      // product
+      app.get('/products',async(req,res) =>{
+         const cursor = productCollection.find();
+         const result = await cursor.toArray();
+         res.send(result);
+      })
+
+      app.post('/products',async(req,res) =>{
+         const product = req.body;
+         console.log(product);
+         const result = await productCollection.insertOne(product);
+         res.send(result);
+      });
+
+      // user
       app.post('/user', async (req, res) => {
          const user = req.body;
          console.log(user);
-         const result = await userCollection.insertOne(user)
-         res.send(result)
+         const result = await userCollection.insertOne(user);
+         res.send(result);
       });
       // Send a ping to confirm a successful connection
       await client.db("admin").command({ ping: 1 });
