@@ -26,55 +26,77 @@ async function run() {
       const userCollection = client.db('futureTechHavenDB').collection('user');
       const productCollection = client.db('futureTechHavenDB').collection('product');
       const addCartsCollection = client.db('futureTechHavenDB').collection('myCart');
+      const brandCollection = client.db('futureTechHavenDB').collection('brand');
 
       // product
-      app.get('/products',async(req,res) =>{
+      app.get('/products', async (req, res) => {
          const cursor = productCollection.find();
          const result = await cursor.toArray();
          res.send(result);
       });
-// product id
-      app.get('/products/:id',async(req,res) =>{
+      // product id
+      app.get('/products/:id', async (req, res) => {
          const id = req.params.id;
-         const query = {_id : new ObjectId(id)}
+         const query = { _id: new ObjectId(id) }
          const result = await productCollection.findOne(query);
          res.send(result);
       });
-//  add products
-      app.post('/products',async(req,res) =>{
+      // myCart
+      app.get('/addToCarts', async (req, res) => {
+         const cursor = addCartsCollection.find();
+         const result = await cursor.toArray();
+         res.send(result);
+      });
+      //  add products
+      app.post('/products', async (req, res) => {
          const product = req.body;
          console.log(product);
          const result = await productCollection.insertOne(product);
          res.send(result);
       });
       // add to card products
-      app.post('/addToCarts',async(req,res) =>{
+      app.post('/addToCarts', async (req, res) => {
          const cartProduct = req.body;
          console.log(cartProduct);
          const result = await addCartsCollection.insertOne(cartProduct);
          res.send(result);
       });
-   // update product
-   app.put('/products/:id',async(req,res) =>{
-      const id = req.params.id;
-      const filter = {_id : new ObjectId(id)}
-      const options = {upsert : true}
-      const updatedProduct = {
-         $set: {
-            // name,brand,type,price,short_description,rating,photo,details
-            name:req.body.name, 
-            brand:req.body.brand, 
-            type:req.body.type, 
-            price:req.body.price, 
-            short_description:req.body.short_description, 
-            rating:req.body.rating, 
-            photo:req.body.photo, 
-            details:req.body.details, 
+      // add to new brands
+      app.post('/brands', async (req, res) => {
+         const newBrand = req.body;
+         console.log(newBrand);
+         const result = await brandCollection.insertOne(newBrand);
+         res.send(result);
+      });
+      // delete mycart item
+      app.delete('/addToCarts/:id', async(req,res)=>{
+         const id = req.params.id;
+         const query = {_id : new ObjectId(id)}
+         const result = await addCartsCollection.deleteOne(query);
+         res.send(result)
+       })
+   
+      // update product
+      app.put('/products/:id', async (req, res) => {
+         const id = req.params.id;
+         const filter = { _id: new ObjectId(id) }
+         const options = { upsert: true }
+         const updatedProduct = {
+            $set: {
+               // name,brand,type,price,short_description,rating,photo,details
+               name: req.body.name,
+               brand: req.body.brand,
+               type: req.body.type,
+               price: req.body.price,
+               short_description: req.body.short_description,
+               rating: req.body.rating,
+               photo: req.body.photo,
+               details: req.body.details,
+            }
          }
-      }
-      const result = await productCollection.updateOne(filter, updatedProduct, options);
-      res.send(result)
-    })
+         const result = await productCollection.updateOne(filter, updatedProduct, options);
+         res.send(result)
+      })
 
       // user
       app.post('/user', async (req, res) => {
