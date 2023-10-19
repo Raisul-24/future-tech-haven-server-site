@@ -34,6 +34,12 @@ async function run() {
          const result = await cursor.toArray();
          res.send(result);
       });
+      // brands
+      app.get('/brands', async (req, res) => {
+         const cursor = brandCollection.find();
+         const result = await cursor.toArray();
+         res.send(result);
+      });
       // product id
       app.get('/products/:id', async (req, res) => {
          const id = req.params.id;
@@ -61,21 +67,15 @@ async function run() {
          const result = await addCartsCollection.insertOne(cartProduct);
          res.send(result);
       });
-      // add to new brands
-      app.post('/brands', async (req, res) => {
-         const newBrand = req.body;
-         console.log(newBrand);
-         const result = await brandCollection.insertOne(newBrand);
-         res.send(result);
-      });
+
       // delete mycart item
-      app.delete('/addToCarts/:id', async(req,res)=>{
+      app.delete('/addToCarts/:id', async (req, res) => {
          const id = req.params.id;
-         const query = {_id : new ObjectId(id)}
+         const query = { _id: new ObjectId(id) }
          const result = await addCartsCollection.deleteOne(query);
          res.send(result)
-       })
-   
+      })
+
       // update product
       app.put('/products/:id', async (req, res) => {
          const id = req.params.id;
@@ -103,6 +103,13 @@ async function run() {
          const user = req.body;
          console.log(user);
          const result = await userCollection.insertOne(user);
+         res.send(result);
+      });
+      // add to new brands
+      app.post('/brands', async (req, res) => {
+         const brand = req.body;
+         console.log(brand);
+         const result = await brandCollection.insertOne(brand);
          res.send(result);
       });
       // Send a ping to confirm a successful connection
